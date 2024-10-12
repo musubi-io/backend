@@ -2,6 +2,8 @@ from flask import Blueprint
 from flask.views import MethodView
 from flask import request,g
 from flask import jsonify
+import csv
+from io import StringIO
 import sqlite3
 import utils
 
@@ -9,9 +11,10 @@ emails = Blueprint('emails', __name__)
 
 class emailsAPI(MethodView):
     def post(self):
-        data = request.get_json()
-        if 'file' not in request.files:
+        
+        if 'emailFile' not in request.files:
             
+            data = request.get_json()
             if not data.get("email",False):
                 return jsonify({"message":"Email Where???"}),400
             if not utils.validate_email(data['email']):
@@ -29,11 +32,26 @@ class emailsAPI(MethodView):
             
             
             return jsonify({"message": "Email added"}), 201
-        
-        print("here")
-        return jsonify({"test":"test"}),200
+        file = request.files['emailFile']
+        if not file.filename.endswith('.csv'):
+            return jsonify({"message":"Invalid file type"}),400
+        else:
+            stream = StringIO(file.stream.read().decode("UTF8"))
+            csv_reader = csv.reader(stream)
+            cur = g.db.cursor()
+            for email in csv_reader:
 
-emails.add_url_rule('/emails', view_func=emailsAPI.as_view('emailsAPI'),methods = ['POST'])
+                cur.execute("INSERT INTO userEmail (email) VALUES (?)", (email[0],))
+            g.db.commit()
+        return jsonify({"test":"test"}),200
+    
+    def get(self):
+        cur = g.db.cursor()
+        cur.execute("SELECT * FROM userEmail")
+        emails = cur.fetchall()
+        return jsonify({"emails":emails}),200
+
+emails.add_url_rule('/emails', view_func=emailsAPI.as_view('emailsAPI'),methods = ['POST','GET'])
 
 
 
