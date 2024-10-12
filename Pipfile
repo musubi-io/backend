@@ -5,6 +5,7 @@ name = "pypi"
 
 [scripts]
 debug = "flask run -h localhost -p 8000 --debug --reload"
+
 [packages]
 flask = "*"
 

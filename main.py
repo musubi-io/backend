@@ -8,19 +8,23 @@ from api import emails
 con = sqlite3.connect('database.db')
 app = Flask(__name__)
 
+
 with open("schema.sql") as f:
     con.executescript(f.read())
 
 
 @app.before_request
 def get_db():
+    
     if "db" not in g:
+        
         try:
+            
             con = sqlite3.connect('database.db')
             g.db = con
         except:
             print("fail")
-    return con
+    
 
 
 @app.teardown_appcontext
