@@ -9,7 +9,7 @@ debug = "flask run -h localhost -p 6900 --debug --reload --host 0.0.0.0"
 [packages]
 flask = "*"
 requests = "*"
-
+flask-cors = "*"
 
 [dev-packages]
 
