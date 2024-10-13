@@ -18,9 +18,8 @@ CREATE TABLE scoring(
     email_id INT REFERENCES phishingEmail(id),
     reply TEXT,
     linkClicked BOOLEAN NOT NULL,
-    forwarded BOOLEAN NOT NULL,
     timespent INT NOT NULL,
-    reported BOOLEAN NOT NULL,
+    opened BOOLEAN NOT NULL,
     date_sent DATE NOT NULL,
     feedback TEXT NOT NULL
 );

@@ -39,11 +39,17 @@ class emailsAPI(MethodView):
             stream = StringIO(file.stream.read().decode("UTF8"))
             csv_reader = csv.reader(stream)
             cur = g.db.cursor()
+            errors = []
             for email in csv_reader:
-
-                cur.execute("INSERT INTO userEmail (email) VALUES (?)", (email[0],))
+                if utils.validate_email(email[0]):
+                    cur.execute("INSERT INTO userEmail (email) VALUES (?)", (email[0],))
+                    
+                else:
+                    errors.append(email[0])
             g.db.commit()
-        return jsonify({"test":"test"}),200
+        if errors:
+            return jsonify({"message":"Some emails were not added","errors":errors}),201
+        else: return jsonify({"message":"all emails added"}),200
     
     def get(self):
         cur = g.db.cursor()
