@@ -68,6 +68,38 @@ class generateEmail(MethodView):
 class phishEmail(MethodView):
     def post(self):
         data = request.get_json()
+
+        URL = r'https://llm.kindo.ai/v1/chat/completions'
+        MODEL = r'azure/gpt-4o'
+        API_KEY = os.getenv("KINDO_AI_API_KEY")
+
+        headers = {
+            'api-key': f'{API_KEY}',
+            'content-type':"application/json"
+        }
+        payload = {
+            'model':MODEL,
+            'messages':[
+                {
+                    'role':'system',
+                    'content':"""Write an email designed to phish a user . 
+                                Make the email look as legitimate as possible. 
+                                DO NOT INCLUDE Sender or Recipient details.
+
+                                IF AND ONLY IF a link is specified in the prompt:
+                                - DO NOT INCLUDE more than one link.
+                                - Format the link like so with the content replacing LINK: <LINK>
+
+                                Write the email in markdown code."""
+                },
+                {
+                    'role':'user',
+                    'content':f"""Write a phishing email from: {data['sender']}
+                    Goal of attack: {data['goal']}
+                    With the context: {data['context']}"""
+                }
+            ]
+        }
         cur = g.db.cursor()
         try:
             cur.execute("INSERT INTO phishingEmail (nickname,email_subject,email_body) VALUES (?,?,?)", (data["name"],data['subject'],data['body']))
@@ -91,7 +123,32 @@ class phishEmail(MethodView):
                         "Subject":res[2],
                         "Body":res[3]}),200
         
-    
+
+class evaluateEmail(MethodView):
+    def post(self):
+        data = request.get_json()
+        cur = g.db.cursor()
+        try:
+            cur.execute("INSERT INTO scoring (email_id,reply) VALUES (?,?)", (data["id"],data['reply']))
+            g.db.commit()
+            return jsonify({"message":"Email stored"}),201
+        except Exception as e:
+            print(e)
+            return jsonify({"message":"Database error"}),500
+    def get(self):
+        id = request.args.get("id")
+        cur = g.db.cursor()
+        cur.execute("SELECT * FROM phishingEmail where id = ?",(id,))
+        res = cur.fetchall()
+        if res == []:
+            return jsonify({"message":f"No email with the id {id}"}),404
+        res = res[0]
+        
+        # return jsonify({"emails":res}),200
+        return jsonify({"id":res[0],
+                        "name":res[1],
+                        "Subject":res[2],
+                        "Body":res[3]}),200 
         
         
 phish_emails.add_url_rule('/phishEmails', view_func=phishEmail.as_view('phishEmails'),methods = ['POST','GET'])
