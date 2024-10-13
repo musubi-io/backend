@@ -3,7 +3,7 @@ from flask import Blueprint
 from flask import g
 import sqlite3
 import os
-from api import emails
+from api import emails,events
 
 con = sqlite3.connect('database.db')
 app = Flask(__name__)
@@ -33,7 +33,8 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-app.register_blueprint(emails.emails,url_prefix='/api')
+app.register_blueprint(emails.emails, url_prefix='/api')
+app.register_blueprint(events.events, url_prefix='/api')
 if __name__ == '__main__':
     
     # run the app the debug script in pipfile

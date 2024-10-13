@@ -1,0 +1,14 @@
+services:
+  
+  coredns:
+    image: coredns/coredns
+    volumes:
+      - ./Corefile:/Corefile
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    command: -conf /root/Corefile
+    restart: unless-stopped
+
+      
+
