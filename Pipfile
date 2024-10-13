@@ -10,6 +10,8 @@ debug = "flask run -h localhost -p 6900 --debug --reload --host 0.0.0.0"
 flask = "*"
 requests = "*"
 flask-cors = "*"
+flask-mail = "*"
+pytracking = "*"
 
 [dev-packages]
 
