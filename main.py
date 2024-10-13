@@ -7,7 +7,6 @@ import sqlite3
 from flask_cors import cross_origin, CORS
 from flask_mail import Mail, Message
 import pytracking
-import cross_origin, CORS
 from api import emails,phishEmails,search,events
 from flask import request
 import imaplib,socket,ssl
@@ -208,7 +207,6 @@ def send_mail():
 
 
 app.register_blueprint(emails.emails,url_prefix='/api')
-app.register_blueprint(emails.emails, url_prefix='/api')
 app.register_blueprint(events.events, url_prefix='/api')
 app.register_blueprint(phishEmails.phish_emails,url_prefix='/api')
 app.register_blueprint(search.search,url_prefix='/api')

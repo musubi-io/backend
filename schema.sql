@@ -17,6 +17,6 @@ CREATE TABLE scoring(
     user_id INT REFERENCES userEmail(id),
     email_id INT REFERENCES phishingEmail(id),
     reply TEXT,
-
+    score INT
     feedback TEXT 
 );
