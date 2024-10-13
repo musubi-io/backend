@@ -8,8 +8,10 @@ CREATE TABLE userEmail (
 );
 
 CREATE TABLE phishingEmail (
-    id SERIAL PRIMARY KEY,
-    email TEXT NOT NULL
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nickname TEXT NOT NULL,
+    email_subject TEXT NOT NULL,
+    email_body TEXT NOT NULL
 );
 CREATE TABLE scoring(
     user_id INT REFERENCES userEmail(id),
